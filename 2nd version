@@ -1,0 +1,27 @@
+from visual import *
+from math import cos,pi
+t = 0
+dt = 1000
+
+sun = vector(0,0,0)
+
+sat = sphere(make_trail=True, radius=10)
+sat.periapsis = 20
+sat.pos=vector(sat.periapsis, 0, 0)
+sat.material = materials.earth
+
+h = 10
+mu = 0.4
+theta = 0
+dt = 0.2
+e = 0.5
+dtheta = pi/360
+while True :
+    rate(30)
+    r = h**2/(mu*(1+e*cos(theta)))
+    sat.pos.x = r*cos(theta)
+    sat.pos.z = r*sin(theta)
+    if theta >= 2*pi:
+        theta = 0
+    else:
+        theta += dtheta*dt
