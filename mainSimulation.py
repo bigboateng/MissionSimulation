@@ -1,26 +1,84 @@
+from math import pi, cos, sin, sqrt, atan, tan
 from visual import *
-from math import cos,pi, atan, tan
+
+def mean_anomaly(t, T, P):
+    return (2 * pi * (t - T))/ P
+    
+def eccentric_anomaly(m, e):
+    """
+    M = mean anomaly
+    E = eccentric anomaly
+    e = eccentricity
+
+    M = E - esinE
+    """
+    def M(E): return E - (e * sin(E))
+    E = 0
+    while m > M(E):
+        E += 1
+    while M(E) > m:
+        E -= 0.00001
+    return E
+    
+def true_anomaly(e, E):
+    s = sqrt((1+e)/(1-e))
+    return 2 * atan(s*tan(E/2))
+
+def polar_position(a, e, v):
+    numerator = a * (1-e*e)
+    denom = 1 + e * cos(v)
+    return numerator/denom
+
+P = 88
 t = 0
-dt = 1000
-twoPi= 2*pi
+T = 0
+e = 0.21
+a = 57.91e6
+earth = sphere(make_trail=True,radius=2.4397e6,material=materials.earth)
+M = mean_anomaly(t, T, P)
+E = eccentric_anomaly(M, e)
+v = true_anomaly(e, E)
+r = polar_position(a, e, v)
+x, y = r * cos(v), r*sin(v)
+#print("{}, {}".format(x,y))
+earth.pos = vector(r*cos(v), r*sin(v),0)
+sun = sphere(pos=vector(0,0,0),radius=2.4397e6, color=color.orange)
+# satellite orbit info
+S_a = 10139.6e3
+S_P = 15
+S_T = 0
+S_e = 0.2
+sat = sphere(make_trail=True,radius=2.4397e6)
+M = mean_anomaly(t,S_T, S_P)
+E = eccentric_anomaly(M, S_e)
+v = true_anomaly(S_e, E)
+r = polar_position(S_a, S_e, v)
+x, y = r * cos(v), r*sin(v)
+sat.pos=vector(x,y,0)
 
-def computeMeanAnomaly(t, T, P):
-    """
-    @param t: current time
-    @param T: last time the body was at periphelion
-    @param P: period of orbit
-    @returns: Mean anomaly - (Angle between body and periphillion if orbot was circular)
-    """
-    return (twoPi*(t-T))/(P)
+while True:
+    rate(50)
+    M = mean_anomaly(t, T, P)
+    E = eccentric_anomaly(M, e)
+    v = true_anomaly(e, E)
+    r = polar_position(a, e, v)
+    x, y = r * cos(v), r*sin(v)
+    #print("{}, {}".format(x,y))
+    earth.pos = vector(x, y,0)
+    #satellite case
+    M = mean_anomaly(t, S_T, S_P)
+    E = eccentric_anomaly(M, S_e)
+    v = true_anomaly(S_e, E)
+    r = polar_position(a, S_e, v)
+    xx, yy = r * cos(v), r*sin(v)
+    #print("{}, {}".format(x,y))
+    sat.pos = vector(x + xx, y + yy,0)
+    
+    if x == 0:
+        T = t
 
-
-def eccentricAnomaly(e, E):
-    """
-    @param e: orbit eccentricity
-    @param E: mean anomally
-    @returns: Mean anomaly 
-    """
-    v = 2*atan(sqrt((1+e)/(1-e)*tan(E/2)))
-    return v
-
-print("Eccentric(0.2,pi/10) = {}".format(eccentricAnomaly(0.2,pi/10)))
+    if xx == 0:
+        S_T = t
+    t += 0.5
+    
+        
