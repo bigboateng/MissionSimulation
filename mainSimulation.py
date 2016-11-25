@@ -75,11 +75,11 @@ e = 0.21
 a = 57.91e6
 #e,a,P,m
 mercury_ = Body(0.2056,57.91e6,2122,3.285e23) # object to save the data
-mercury = sphere(radius=2.4397e6*0.384)
+mercury = sphere(radius=2440)
 mercury.pos = vector(mercury_.get_position(t))
 mercury_label = label(pos=mercury.pos,text='Mercury', xoffset=12,yoffset=12,font='sans')
 #print("{}, {}".format(x,y))
-sun = sphere(pos=vector(0,0,0),radius=2.4397e6*4, color=color.orange)
+sun = sphere(pos=vector(0,0,0),radius=695700, color=color.orange)
 sun.mass = 1.989e30 #kg
 # satellite orbit info
 sat_ = Body(0.21,10139.6e3,12,1200) # object to save the data
@@ -87,14 +87,14 @@ sat = sphere(radius=2.4397e6/2)
 # earth params
 
 earth_ = Body(0.0167,149.60e6,8760,5.9723e24)# earth data
-earth = sphere(radius=2.4397e6, make_trail=true)
+earth = sphere(radius=6371, make_trail=true)
 earth.material = materials.earth
 earth.pos = earth_.get_position(t)
-earth_label = label(pos=earth.pos,text='Earth', font='sans')
+earth_label = label(pos=earth.pos,text='Earth', font='sans',xoffset=-12,yoffset=10)
 f1 = gcurve(color=color.green,width=600)
-venus_ = Body(0.0067,108.21e6,5400,5.9723e24)# earth data
-venus = sphere(radius=2.4397e6, make_trail=true)
-venus.pos = venus_.get_position(t)
+#venus_ = Body(0.0067,108.21e6,5400,5.9723e24)# earth data
+#venus = sphere(radius=2.4397e6, make_trail=true)
+#venus.pos = venus_.get_position(t)
 #time text
 time_label = label(pos=(0,0.25,0), text='T +0')
 
@@ -106,7 +106,7 @@ while True:
     sat.pos = sat_.get_position(t, mercury)
     earth.pos = earth_.get_position(t)
     earth_label.pos = earth.pos
-    venus.pos = venus_.get_position(t)
+ #   venus.pos = venus_.get_position(t)
     f1.plot(pos=[t,mercury_.kinetic_energy(sun)])
     time_label.text = "T +{} days".format(hrsTodays(t))
     t += 2
