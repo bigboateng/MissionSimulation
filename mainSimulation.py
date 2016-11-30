@@ -182,9 +182,13 @@ eccenText.SetFont(font)
 semiMajorText.SetFont(font)
 speedText.SetFont(font)
 numOrbitsText.SetFont(font)
+
+# calculating radio shadow
+diff = earth.pos-sat.pos
+pointer = arrow(pos=sat.pos,axis=diff, shaftwidth=695700)
 def setTimeText(t):
     if t <8760:
-        timeText.SetLabel("T+ {} days".format(t / 24))
+        timeText.SetLabel("T+ {:.0f} days".format(t / 24))
     else:
         yrs = t / 8760
         days = (t*8760 - yrs)/24
@@ -206,14 +210,37 @@ def showControls():
     meanAnomaly.SetLabel("True anomaly = {:0.2f} deg".format(mercury_.get_anomaly()))
     speedText.SetLabel("Speed = {:.2f} km/s".format(sat_.get_speed(mercury_)))
     numOrbitsText.SetLabel("# Orbits = {}".format(sat_.get_num_orbits()))
+
+def calculateRadioShadow(mercury, earth):
+    # work out straight line between earth and sun y = mx + b
+    a = mercury
+    b = earth
+    m = (b.y - a.y) / (b.x - a.x)
+    c = a.y - m*a.x
+    # we now know the eqn of line y = mx + c
+    # we know eqn of circle x^2+y^2=R^2 where R = radius of sun
+    R = 695700
+    B = 2 * m * c
+    A = m**2 + 1
+    C = -R**2 + c**2
+    if (B**2 - 4*A*C > 0):
+        print("SHADOW")
+    else:
+        print("NOT SHADOW")
+    
+    
     
 while True:
-    rate(30)
+    rate(60)
     showPlanets()
     showLabels()
     showControls()
+    diff = earth.pos-sat.pos
+    pointer.pos = sat.pos
+    pointer.axis = diff
+    calculateRadioShadow(mercury, earth)
     #f1.plot(pos=[t,mercury_.kinetic_energy(sun)])
    # time_label.text = "T +{} days".format(hrsTodays(t))
-    t += 0.6
+    t += 1
     
         
