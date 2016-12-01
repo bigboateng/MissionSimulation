@@ -18,6 +18,7 @@ w = window(width=2*(L+window.dwidth), height=L+window.dheight+window.menuheight+
 display(window=Window, x=0, y=0,width=window1Size,height=window1Size)
 controlsDisplay = w.panel # Refers to the full region of the window in which to place widgets
 
+f = open("shadow_coords.txt", 'w')
 
 class Body():
     def __init__(self,e,a,P,mass):
@@ -106,6 +107,7 @@ class Body():
         self.pos = vector(x,y,0)
         if x == 0:
 ##            self.T = time
+            print("X = 0")
             self.numOfOrbits += 1
         return x,y
 
@@ -213,8 +215,8 @@ def showControls():
 
 def calculateRadioShadow(mercury, earth):
     # work out straight line between earth and sun y = mx + b
-    a = mercury
-    b = earth
+    a = mercury.pos
+    b = earth.pos
     m = (b.y - a.y) / (b.x - a.x)
     c = a.y - m*a.x
     # we now know the eqn of line y = mx + c
@@ -223,24 +225,27 @@ def calculateRadioShadow(mercury, earth):
     B = 2 * m * c
     A = m**2 + 1
     C = -R**2 + c**2
-    if (B**2 - 4*A*C > 0):
+    if (B**2 - 4*A*C >=0 and a.y < 0):
         print("SHADOW")
+        s = "{:.2f},{:.2f},{:.2f},{:.2f},{:.2f}\n".format(t, a.x,a.y,b.x,b.y)
+        f.write(s)
     else:
-        print("NOT SHADOW")
+        pass
+##        print("NOT SHADOW")
     
     
     
 while True:
-    rate(60)
+    rate(250)
     showPlanets()
     showLabels()
     showControls()
     diff = earth.pos-sat.pos
-    pointer.pos = sat.pos
+    pointer.pos = mercury.pos
     pointer.axis = diff
     calculateRadioShadow(mercury, earth)
     #f1.plot(pos=[t,mercury_.kinetic_energy(sun)])
    # time_label.text = "T +{} days".format(hrsTodays(t))
-    t += 1
+    t += 0.04
     
         
